@@ -20,7 +20,7 @@ project.ext {
     */
     isRelease = project.hasProperty("release")
 
-    versionSuffix = isRelease ? "" : "-SNAPSHOT"
+    versionSuffix = isRelease ? "" : "-DigitalFleet"
 
     maven = [
             repo    : isRelease ? mavenReleases : mavenSnapshots,
@@ -28,7 +28,8 @@ project.ext {
             password: isRelease ? mavenReleasesPassword : mavenSnapshotsPassword
     ]
 }
-version '2.2.0-rc1' + versionSuffix
+// First version number is the wvalib version - df - second version number is the digitalfleet version.
+version '2.2.0-df-1.0.1' + versionSuffix
 group 'com.digi.wva'
 dependencies {
     //compile fileTree(include: '*.jar', dir: 'libs')
