@@ -34,6 +34,7 @@ public class Hardware {
     private static final String LED_BASE = "hw/leds/";
     private static final String BUTTON_BASE = "hw/buttons/";
     private static final String TIME_BASE = "hw/time/";
+    private static final String REBOOT_PATH ="hw/reboot/";
     private static final String LED_KEY = "leds";
     private static final String BUTTON_KEY = "buttons";
 
@@ -271,6 +272,30 @@ public class Hardware {
                 Log.e(TAG, "Failed to set WVA device time to " + timestamp, error);
                 if (cb != null) {
                     cb.onResponse(error, newTimeUTC);
+                }
+            }
+        });
+    }
+
+    public void reboot(final WvaCallback<Void> cb) {
+        httpClient.put(REBOOT_PATH, new JSONObject(), new HttpClient.ExpectEmptyCallback() {
+            @Override
+            public void onBodyNotEmpty(String body) {
+                Log.e(TAG, "reboot got unexpected response body content:\n" + body);
+                onFailure(new Exception("Unexpected response body: " + body));
+            }
+
+            @Override
+            public void onSuccess() {
+                if (cb != null) {
+                    cb.onResponse(null, null);
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                if (cb != null) {
+                    cb.onResponse(error, null);
                 }
             }
         });

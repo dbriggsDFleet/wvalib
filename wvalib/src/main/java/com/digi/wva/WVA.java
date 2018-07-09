@@ -755,6 +755,11 @@ public class WVA {
         files.updateFile(volume, path, rawBody, wvaCallback);
     }
 
+    public void reboot(final WvaCallback<Void> callback) {
+        final WvaCallback<Void> wrapped = WvaCallback.wrap(callback, this.uiThreadHandler);
+        hardware.reboot(wrapped);
+    }
+
     /**
      * Attempts to determine whether the device with which we are communicating
      * is in fact a WVA. This is done by querying {@code /ws/} and comparing the list of
