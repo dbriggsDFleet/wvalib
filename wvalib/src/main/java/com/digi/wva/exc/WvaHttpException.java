@@ -46,6 +46,10 @@ public class WvaHttpException extends Exception {
         return this.url;
     }
 
+    public final String getDescription() {
+        return this.description;
+    }
+
     /**
      * Returns a human-readable message describing this exception. This method is intended to be used
      * when outputting exceptions to the logs.
