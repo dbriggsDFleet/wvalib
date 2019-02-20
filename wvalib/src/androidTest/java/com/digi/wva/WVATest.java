@@ -22,6 +22,7 @@ import com.digi.wva.internal.FaultCodes;
 import com.digi.wva.internal.Files;
 import com.digi.wva.internal.Hardware;
 import com.digi.wva.internal.HttpClient;
+import com.digi.wva.internal.Password;
 import com.digi.wva.internal.VehicleData;
 import com.digi.wva.test_auxiliary.HttpClientSpoofer;
 import com.digi.wva.test_auxiliary.JsonFactory;
@@ -66,6 +67,7 @@ public class WVATest extends TestCase {
     VehicleDataListener mListener = mock(VehicleDataListener.class);
     FaultCodeListener mFListener = mock(FaultCodeListener.class);
     Files mFiles = mock(Files.class);
+    Password mPassword = mock(Password.class);
 
     // Spies
     VehicleData vehSpy = null;
@@ -79,11 +81,11 @@ public class WVATest extends TestCase {
 
     protected void setUp() throws Exception {
         normalWva = new WVA(hostname);
-        mockedWVA = WVA.getDevice(hostname, httpClient, mVeh, mEcus, mHw, mFc, mFiles);
+        mockedWVA = WVA.getDevice(hostname, httpClient, mVeh, mEcus, mHw, mFc, mFiles, mPassword);
 
         VehicleData mVeh2 = new VehicleData(httpClient);
         vehSpy = spy(mVeh2);
-        mockedWvaVehicleSpy = WVA.getDevice(hostname, httpClient, vehSpy, mEcus, mHw, mFc, mFiles);
+        mockedWvaVehicleSpy = WVA.getDevice(hostname, httpClient, vehSpy, mEcus, mHw, mFc, mFiles, mPassword);
 
         super.setUp();
     }
@@ -107,7 +109,7 @@ public class WVATest extends TestCase {
 
     public void testBasicAuthMethods() {
         HttpClient mockHttp = mock(HttpClient.class);
-        WVA mock = WVA.getDevice(hostname, mockHttp, vehSpy, mEcus, mHw, mFc, mFiles);
+        WVA mock = WVA.getDevice(hostname, mockHttp, vehSpy, mEcus, mHw, mFc, mFiles, mPassword);
 
         mock.useBasicAuth("foo", "bar");
         verify(mockHttp).useBasicAuth("foo", "bar");
@@ -118,7 +120,7 @@ public class WVATest extends TestCase {
 
     public void testHttpPortMethods() {
         HttpClient mockHttp = mock(HttpClient.class);
-        WVA mock = WVA.getDevice(hostname, mockHttp, vehSpy, mEcus, mHw, mFc, mFiles);
+        WVA mock = WVA.getDevice(hostname, mockHttp, vehSpy, mEcus, mHw, mFc, mFiles, mPassword);
 
         mock.useSecureHttp(true);
         verify(mockHttp).useSecureHttp(true);
@@ -133,7 +135,7 @@ public class WVATest extends TestCase {
 
     public void testHttpLoggingMethods() {
         HttpClient mockHttp = mock(HttpClient.class);
-        WVA mock = WVA.getDevice(hostname, mockHttp, vehSpy, mEcus, mHw, mFc, mFiles);
+        WVA mock = WVA.getDevice(hostname, mockHttp, vehSpy, mEcus, mHw, mFc, mFiles, mPassword);
 
         // Check that getHttpLoggingEnabled returns the HTTP client's value.
         // First with logging enabled...
