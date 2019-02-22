@@ -39,6 +39,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Locale;
 
+import javax.net.SocketFactory;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
@@ -268,6 +269,25 @@ public class HttpClient {
                     return true;
                 }
             });
+        this.hostname = hostname;
+    }
+
+    /** Constructor
+     *
+     * @param hostname The hostname/IP address of the WVA.
+     * @param socketFactory custom socket factory provided by client.  Okhttp will default to
+     *                      the connection that can communicate to the internet.  This is not the
+     *                      case if we are connecting to the Digi.
+     */
+    public HttpClient(String hostname, SocketFactory socketFactory) {
+        this.client = new OkHttpClient();
+        client.setSslSocketFactory(makeSSLSocketFactory())
+                .setSocketFactory(socketFactory)
+                .setHostnameVerifier(new HostnameVerifier() {
+                    public boolean verify(String hostname, SSLSession session) {
+                        return true;
+                    }
+                });
         this.hostname = hostname;
     }
 

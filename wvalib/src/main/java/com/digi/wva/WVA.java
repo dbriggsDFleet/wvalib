@@ -42,6 +42,8 @@ import java.io.File;
 import java.net.Inet4Address;
 import java.util.Set;
 
+import javax.net.SocketFactory;
+
 /**
  * Configures and manages interactions with the WVA device. Most applications can use just
  * a single WVA object to manage interactions with the WVA.
@@ -228,6 +230,30 @@ public class WVA {
     public WVA(String hostname) {
         this.hostname = hostname;
         this.httpClient = new HttpClient(hostname);
+        this.vehicleData = new VehicleData(httpClient);
+        this.ecus = new Ecus(httpClient);
+        this.hardware = new Hardware(httpClient);
+        this.faultCodes = new FaultCodes(httpClient);
+        this.files = new Files(httpClient);
+        this.password = new Password(httpClient);
+    }
+
+    /**
+     * WVA Constructor.
+     *
+     * <p><b>Note:</b> By default, interactions with the WVA over HTTP will be done
+     * using HTTP (not HTTPS), and without any basic authentication. The methods
+     * {@link #useBasicAuth(String, String)} and {@link #useSecureHttp(boolean)}
+     * can be used to configure this object to use the correct settings.</p>
+     *
+     * @param hostname the hostname/IP address of the WVA device
+     * @param socketFactory custom socket factory provided by client.  Okhttp will default to
+     *                      the connection that can communicate to the internet.  This is not the
+     *                      case if we are connecting to the Digi.
+     */
+    public WVA(String hostname, SocketFactory socketFactory) {
+        this.hostname = hostname;
+        this.httpClient = new HttpClient(hostname, socketFactory);
         this.vehicleData = new VehicleData(httpClient);
         this.ecus = new Ecus(httpClient);
         this.hardware = new Hardware(httpClient);
