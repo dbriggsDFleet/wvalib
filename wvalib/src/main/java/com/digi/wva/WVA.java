@@ -29,6 +29,7 @@ import com.digi.wva.internal.Files;
 import com.digi.wva.internal.Hardware;
 import com.digi.wva.internal.HttpClient;
 import com.digi.wva.internal.HttpClient.ExpectEmptyCallback;
+import com.digi.wva.internal.Password;
 import com.digi.wva.internal.VehicleData;
 import com.digi.wva.util.WvaUtil;
 
@@ -173,12 +174,14 @@ import java.util.Set;
  */
 public class WVA {
     private static final String TAG = "com.digi.wva.WVA";
+
     private String hostname;
     private VehicleData vehicleData;
     private Hardware hardware;
     private Ecus ecus;
     private FaultCodes faultCodes;
     private Files files;
+    private Password password;
 
     private HttpClient httpClient;
     private EventChannel eventChannel;
@@ -199,7 +202,7 @@ public class WVA {
      * @return the WVA
      */
     static WVA getDevice(String hostname, HttpClient client, VehicleData vehicleData,
-                         Ecus ecus, Hardware hw, FaultCodes fc, Files files) {
+                         Ecus ecus, Hardware hw, FaultCodes fc, Files files, Password password) {
         WVA dev = new WVA();
         dev.hostname = hostname;
         dev.httpClient = ((client != null)  ? client  : new HttpClient(hostname));
@@ -208,7 +211,7 @@ public class WVA {
         dev.hardware   = ((hw != null)      ? hw      : new Hardware(client));
         dev.faultCodes = ((fc != null)      ? fc      : new FaultCodes(client));
         dev.files      = ((files != null)   ? files   : new Files(client));
-
+        dev.password   = ((password != null) ? password   : new Password(client));
         return dev;
     }
 
@@ -230,6 +233,7 @@ public class WVA {
         this.hardware = new Hardware(httpClient);
         this.faultCodes = new FaultCodes(httpClient);
         this.files = new Files(httpClient);
+        this.password = new Password(httpClient);
     }
 
     /**
@@ -758,6 +762,23 @@ public class WVA {
     public void reboot(final WvaCallback<Void> callback) {
         final WvaCallback<Void> wrapped = WvaCallback.wrap(callback, this.uiThreadHandler);
         hardware.reboot(wrapped);
+    }
+
+    /**
+     * uriPut Doesn't work for password because it doesn't support empty json call back.  Expose
+     * password as separate api.
+     *
+     * @param newPassword new admin password for the device
+     * @param callback callback to give feedback on whether call succeeds or not
+     */
+    public void password(final String newPassword, final WvaCallback<Void> callback) {
+        final WvaCallback<Void> wrapped = WvaCallback.wrap(callback, this.uiThreadHandler);
+        try {
+            password.password(newPassword, wrapped);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            if (wrapped != null) wrapped.onResponse(e, null);
+        }
     }
 
     /**
